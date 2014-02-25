@@ -3,12 +3,16 @@
     <head>
         <link rel="stylesheet" type="text/css" href="../css/index.css">
         <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-        <script src="../js/index.js"></script>
+        <script src="../js/map.js"></script>
+        <script src="../js/read-csv.js"></script>
         <script>
             google.maps.event.addDomListener(window, 'load', initialize);
         </script>
     </head>
     <body>
+        <div id="input-file">
+            <input type="file" onchange="handleFiles(this.files)"></input>
+        </div>
         <div id="map">
         </div>
     </body>
