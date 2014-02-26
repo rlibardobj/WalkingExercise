@@ -41,66 +41,48 @@ function centerMap() {
 
 function drawRoutes() {
     //Intialize the Path Array
-    var path = new google.maps.MVCArray();
+    var path = []//new google.maps.MVCArray();
 
     //Intialize the Direction Service
     var service = new google.maps.DirectionsService();
 
     //Set the Path Stroke Color
-    var poly = new google.maps.Polyline({ map: map, strokeColor: '#4986E7' });
-
+    var poly = new google.maps.Polyline({ map: map, strokeColor: '#4986E7', strokeWeight: 6 });
+    poly.setPath(new Array());
+    
     var keepBuildingRoute = true;
     var beginningOfSection = 0;
-    path.push(coordinates[0]);
+    
     while (keepBuildingRoute) {
-        console.log(beginningOfSection);
-        var routeSection = coordinates.slice(beginningOfSection,beginningOfSection + 8);
+        var routeSection = coordinates.slice(beginningOfSection,beginningOfSection + 10);
         var waypointsArray = [];
-        var waypoints = routeSection.slice(1,7);
+        var waypoints = routeSection.slice(1,9);
+        //poly.getPath().push(routeSection[0]);
+        //path.push(routeSection[0]);
         for (var i = 0; i < waypoints.length; i++) {
             waypointsArray.push({
                 location: waypoints[i],
-                stopover: false
+                stopover: true
             });
         }
         service.route({
-            origin: coordinates[beginningOfSection],
-            destination: coordinates[beginningOfSection + 7],
+            origin: routeSection[0],
+            destination: routeSection[routeSection.length - 1],
             waypoints: waypointsArray,
-            travelMode: google.maps.DirectionsTravelMode.DRIVING
+            travelMode: google.maps.DirectionsTravelMode.WALKING
         }, function (result, status) {
-            console.log(status);
             if (status == google.maps.DirectionsStatus.OK) {
                 for (var i = 0, len = result.routes[0].overview_path.length; i < len; i++) {
-                    path.push(result.routes[0].overview_path[i]);
+                    poly.getPath().push(result.routes[0].overview_path[i]);
+                    console.log(result.routes[0].overview_path[i]);
                 }
             }
         });
-        if (beginningOfSection + 8 >= coordinates.length)
+        //keepBuildingRoute = false;
+        if (beginningOfSection + 9 >= coordinates.length)
             keepBuildingRoute = false;
         else
-            beginningOfSection += 8;
-    }/*
-    //Loop and Draw Path Route between the Points on MAP
-    for (var i = 0; i < coordinates.length; i++) {
-        if ((i + 1) < coordinates.length) {
-            var src = coordinates[i];
-            var des = coordinates[i + 1];
-            path.push(coordinates[i]);
-            service.route({
-                origin: src,
-                destination: des,
-                travelMode: google.maps.DirectionsTravelMode.DRIVING
-            }, function (result, status) {
-                console.log(status);
-                if (status == google.maps.DirectionsStatus.OK) {
-                    for (var i = 0, len = result.routes[0].overview_path.length; i < len; i++) {
-                        path.push(result.routes[0].overview_path[i]);
-                    }
-                }
-            });
-        }
-    }*/
-    poly.setPath(path);
-    console.log(2);
+            beginningOfSection += 9;
+    }
+    //console.log(poly.getPath());
 }
