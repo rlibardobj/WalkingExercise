@@ -19,8 +19,8 @@ function displayCoordinatesAndDrawRoutes(csv) {
         var Latlng = allCoordinates[i].split(',');
         displayMarker(Latlng[0],Latlng[1],i);
     }
-    centerMap();
     drawRoutes();
+    centerMap();
 }
 
 function displayMarker(lat, long, index) {
@@ -40,25 +40,20 @@ function centerMap() {
 }
 
 function drawRoutes() {
-    //Intialize the Path Array
-    var path = []//new google.maps.MVCArray();
-
     //Intialize the Direction Service
     var service = new google.maps.DirectionsService();
-
-    //Set the Path Stroke Color
-    var poly = new google.maps.Polyline({ map: map, strokeColor: '#4986E7', strokeWeight: 6 });
-    poly.setPath(new Array());
     
+    //Notifies when to finish building the route
     var keepBuildingRoute = true;
+    
+    //Beginning for a specific array with a partial route coordinates
     var beginningOfSection = 0;
     
+    //While not reaching the end of the coordinates array
     while (keepBuildingRoute) {
         var routeSection = coordinates.slice(beginningOfSection,beginningOfSection + 10);
         var waypointsArray = [];
         var waypoints = routeSection.slice(1,9);
-        //poly.getPath().push(routeSection[0]);
-        //path.push(routeSection[0]);
         for (var i = 0; i < waypoints.length; i++) {
             waypointsArray.push({
                 location: waypoints[i],
@@ -72,10 +67,10 @@ function drawRoutes() {
             travelMode: google.maps.DirectionsTravelMode.WALKING
         }, function (result, status) {
             if (status == google.maps.DirectionsStatus.OK) {
-                for (var i = 0, len = result.routes[0].overview_path.length; i < len; i++) {
-                    poly.getPath().push(result.routes[0].overview_path[i]);
-                    console.log(result.routes[0].overview_path[i]);
-                }
+                new google.maps.DirectionsRenderer({
+                    map: map,
+                    directions: result
+                });
             }
         });
         //keepBuildingRoute = false;
@@ -84,5 +79,4 @@ function drawRoutes() {
         else
             beginningOfSection += 9;
     }
-    //console.log(poly.getPath());
 }
