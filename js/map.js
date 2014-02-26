@@ -19,8 +19,8 @@ function displayCoordinatesAndDrawRoutes(csv) {
         var Latlng = allCoordinates[i].split(',');
         displayMarker(Latlng[0],Latlng[1],i);
     }
-    drawRoutes();
     centerMap();
+    drawRoutes();
 }
 
 function displayMarker(lat, long, index) {
@@ -49,14 +49,37 @@ function drawRoutes() {
     //Set the Path Stroke Color
     var poly = new google.maps.Polyline({ map: map, strokeColor: '#4986E7' });
 
-    //poly.setPath(path);
-    setTimeout(function() {alert("hola");},10000);
-    path.push(coordinates[0]);
+    var keepBuildingRoute = true;
+    var beginningOfSection = 0;
+
+    while (keepBuildingRoute) {
+        console.log(beginningOfSection);
+        var routeSection = coordinates.slice(beginningOfSection,beginningOfSection + 8);
+        path.push(routeSection[0]);
+        service.route({
+            origin: coordinates[beginningOfSection],
+            destination: coordinates[beginningOfSection + 7],
+            waypoints: routeSection.slice(1,7),
+            travelMode: google.maps.DirectionsTravelMode.DRIVING
+        }, function (result, status) {
+            console.log(status);
+            if (status == google.maps.DirectionsStatus.OK) {
+                for (var i = 0, len = result.routes[0].overview_path.length; i < len; i++) {
+                    path.push(result.routes[0].overview_path[i]);
+                }
+            }
+        });
+        if (beginningOfSection + 8 >= coordinates.length)
+            keepBuildingRoute = false;
+        else
+            beginningOfSection += 8;
+    }/*
     //Loop and Draw Path Route between the Points on MAP
     for (var i = 0; i < coordinates.length; i++) {
         if ((i + 1) < coordinates.length) {
             var src = coordinates[i];
             var des = coordinates[i + 1];
+            path.push(coordinates[i]);
             service.route({
                 origin: src,
                 destination: des,
@@ -70,11 +93,7 @@ function drawRoutes() {
                 }
             });
         }
-    }
-    console.log(path);
+    }*/
     poly.setPath(path);
-}
-
-function wait() {
-    return;
+    console.log(2);
 }
