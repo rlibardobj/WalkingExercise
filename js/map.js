@@ -51,15 +51,22 @@ function drawRoutes() {
 
     var keepBuildingRoute = true;
     var beginningOfSection = 0;
-
+    path.push(coordinates[0]);
     while (keepBuildingRoute) {
         console.log(beginningOfSection);
         var routeSection = coordinates.slice(beginningOfSection,beginningOfSection + 8);
-        path.push(routeSection[0]);
+        var waypointsArray = [];
+        var waypoints = routeSection.slice(1,7);
+        for (var i = 0; i < waypoints.length; i++) {
+            waypointsArray.push({
+                location: waypoints[i],
+                stopover: false
+            });
+        }
         service.route({
             origin: coordinates[beginningOfSection],
             destination: coordinates[beginningOfSection + 7],
-            waypoints: routeSection.slice(1,7),
+            waypoints: waypointsArray,
             travelMode: google.maps.DirectionsTravelMode.DRIVING
         }, function (result, status) {
             console.log(status);
