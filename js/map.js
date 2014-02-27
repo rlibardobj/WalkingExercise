@@ -67,9 +67,10 @@ function drawRoutes() {
             travelMode: google.maps.DirectionsTravelMode.WALKING
         }, function (result, status) {
             if (status == google.maps.DirectionsStatus.OK) {
-                new google.maps.DirectionsRenderer({
+                new google.maps.Polyline({
                     map: map,
-                    directions: result
+                    strokeColor: '#0B3B17',
+                    path: result.routes[0].overview_path
                 });
             }
         });
