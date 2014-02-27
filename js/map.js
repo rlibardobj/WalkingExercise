@@ -73,7 +73,6 @@ function drawRoutes() {
                 });
             }
         });
-        //keepBuildingRoute = false;
         if (beginningOfSection + 9 >= coordinates.length)
             keepBuildingRoute = false;
         else
