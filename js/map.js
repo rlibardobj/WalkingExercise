@@ -19,7 +19,7 @@ function displayCoordinatesAndDrawRoutes(csv) {
         var Latlng = allCoordinates[i].split(',');
         displayMarker(Latlng[0],Latlng[1],i);
     }
-    drawRoutes();
+    drawRoutes(drawSection);
     centerMap();
 }
 
@@ -38,17 +38,19 @@ function centerMap() {
     map.setCenter(latlngBounds.getCenter());
     map.fitBounds(latlngBounds);
 }
-
-function drawRoutes() {
+var service = new google.maps.DirectionsService();
+function drawRoutes(drawSection) {
     //Intialize the Direction Service
-    var service = new google.maps.DirectionsService();
     
+
     //Notifies when to finish building the route
     var keepBuildingRoute = true;
-    
+
     //Beginning for a specific array with a partial route coordinates
     var beginningOfSection = 0;
-    
+
+    var timeOut = 1000;
+
     //While not reaching the end of the coordinates array
     while (keepBuildingRoute) {
         var routeSection = coordinates.slice(beginningOfSection,beginningOfSection + 10);
@@ -60,23 +62,32 @@ function drawRoutes() {
                 stopover: true
             });
         }
-        service.route({
-            origin: routeSection[0],
-            destination: routeSection[routeSection.length - 1],
-            waypoints: waypointsArray,
-            travelMode: google.maps.DirectionsTravelMode.WALKING
-        }, function (result, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-                new google.maps.Polyline({
-                    map: map,
-                    strokeColor: '#0B3B17',
-                    path: result.routes[0].overview_path
-                });
-            }
-        });
+        console.log(timeOut);
+        setTimeout(function() {
+            service.route({
+                origin: routeSection[0],
+                destination: routeSection[routeSection.length - 1],
+                waypoints: waypointsArray,
+                travelMode: google.maps.DirectionsTravelMode.WALKING
+            }, function (result, status) {
+                if (status == google.maps.DirectionsStatus.OK) {
+                    drawSection(result.routes[0].overview_path);
+                }
+            });
+        },timeOut);
+        timeOut += 1000;
         if (beginningOfSection + 9 >= coordinates.length)
             keepBuildingRoute = false;
         else
             beginningOfSection += 9;
     }
+}
+
+function drawSection(overview_path) {
+    new google.maps.Polyline({
+        map: map,
+        strokeColor: '#0B3B17',
+        path: overview_path
+    });
+    console.log(overview_path);
 }
