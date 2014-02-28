@@ -1,6 +1,8 @@
 window.map = null;
 window.latlngBounds = new google.maps.LatLngBounds();
 window.coordinates = new Array();
+//Intialize the Direction Service
+var service = new google.maps.DirectionsService();
 
 function initialize() {
     var map_canvas = document.getElementById('map');
@@ -38,56 +40,52 @@ function centerMap() {
     map.setCenter(latlngBounds.getCenter());
     map.fitBounds(latlngBounds);
 }
-var service = new google.maps.DirectionsService();
+
 function drawRoutes(drawSection) {
-    //Intialize the Direction Service
-    
 
     //Notifies when to finish building the route
     var keepBuildingRoute = true;
 
-    //Beginning for a specific array with a partial route coordinates
+    //Starting point of a specific array with the coordinates for a partial section of the route
     var beginningOfSection = 0;
 
-    var timeOut = 1000;
+    //Used for managing the time between calls to the DirectionsService
+    var timeOut = 0;
 
     //While not reaching the end of the coordinates array
     while (keepBuildingRoute) {
-        var routeSection = coordinates.slice(beginningOfSection,beginningOfSection + 10);
+        var routeSection = coordinates.slice(beginningOfSection,beginningOfSection + 3);
         var waypointsArray = [];
-        var waypoints = routeSection.slice(1,9);
+        var waypoints = routeSection.slice(1,2);
         for (var i = 0; i < waypoints.length; i++) {
             waypointsArray.push({
                 location: waypoints[i],
                 stopover: true
             });
         }
-        console.log(timeOut);
-        setTimeout(function() {
-            service.route({
-                origin: routeSection[0],
-                destination: routeSection[routeSection.length - 1],
-                waypoints: waypointsArray,
-                travelMode: google.maps.DirectionsTravelMode.WALKING
-            }, function (result, status) {
-                if (status == google.maps.DirectionsStatus.OK) {
-                    drawSection(result.routes[0].overview_path);
-                }
-            });
-        },timeOut);
+        drawSection(timeOut,routeSection[0],routeSection[routeSection.length - 1],waypointsArray);
         timeOut += 1000;
-        if (beginningOfSection + 9 >= coordinates.length)
+        if (beginningOfSection + 2 >= coordinates.length)
             keepBuildingRoute = false;
         else
-            beginningOfSection += 9;
+            beginningOfSection += 2;
     }
 }
 
-function drawSection(overview_path) {
-    new google.maps.Polyline({
-        map: map,
-        strokeColor: '#0B3B17',
-        path: overview_path
-    });
-    console.log(overview_path);
+function drawSection(timeout,beginning,end,waypoints) {
+    setTimeout( function() {
+        service.route({
+            origin: beginning,
+            destination: end,
+            waypoints: waypoints,
+            travelMode: google.maps.DirectionsTravelMode.WALKING
+        }, function (result, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+                new google.maps.Polyline({
+                    map: this.map,
+                    strokeColor: '#0B3B17',
+                    path: result.routes[0].overview_path
+                });
+            }
+        }.bind(this))}, timeout);
 }
