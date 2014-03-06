@@ -1,8 +1,8 @@
-window.map = null;
-window.latlngBounds = new google.maps.LatLngBounds();
-window.coordinates = new Array();
-//Intialize the Direction Service
+var map = null;
+var latlngBounds = new google.maps.LatLngBounds();
+var coordinates = new Array();
 var service = new google.maps.DirectionsService();
+var circle = null;
 
 function initialize() {
     var map_canvas = document.getElementById('map');
@@ -13,25 +13,43 @@ function initialize() {
         mapTypeId: google.maps.MapTypeId.ROADMAP
     }
     map = new google.maps.Map(map_canvas, map_options);
+    circle = new google.maps.Circle({map: map, 
+                                     visible: false, 
+                                     radius: 100});
 }
 
 function displayCoordinatesAndDrawRoutes(csv) {
     var allCoordinates = csv.split(/\r\n|\n/);
     for (var i=0; i<allCoordinates.length-1 ; i++) {
         var Latlng = allCoordinates[i].split(',');
-        displayMarker(Latlng[0],Latlng[1],i);
+        createAndDisplayMarker(Latlng[0],Latlng[1],i);
     }
-    drawRoutes(drawSection);
+    drawRoute();
     centerMap();
 }
 
-function displayMarker(lat, long, index) {
+function createAndDisplayMarker(lat, long, index) {
     var latlng = new google.maps.LatLng(lat,long);
     var marker = new google.maps.Marker({
         position: latlng,
         map: map,
         title: 'This is marker #' + (index + 1)
     });
+    google.maps.event.addListener(marker, 'click', function(position) {
+        return function() {
+            if (circle.getVisible()) {
+                if (position.equals(circle.getCenter()))
+                    circle.setVisible(false);
+                else {
+                    console.log(10);
+                }
+            }
+            else {
+                circle.setCenter(position);
+                circle.setVisible(true);
+            }
+        };
+    }(marker.getPosition()));
     coordinates.push(latlng);
     latlngBounds.extend(marker.position);
 }
@@ -41,7 +59,7 @@ function centerMap() {
     map.fitBounds(latlngBounds);
 }
 
-function drawRoutes(drawSection) {
+function drawRoute() {
 
     //Notifies when to finish building the route
     var keepBuildingRoute = true;
@@ -63,29 +81,29 @@ function drawRoutes(drawSection) {
                 stopover: true
             });
         }
-        drawSection(timeOut,routeSection[0],routeSection[routeSection.length - 1],waypointsArray);
-        timeOut += 1000;
+        //drawSection(timeOut,routeSection[0],routeSection[routeSection.length - 1],waypointsArray);
+        setTimeout( function(beginning,end,waypoints) {
+            return function () {
+                service.route({
+                    origin: beginning,
+                    destination: end,
+                    waypoints: waypoints,
+                    travelMode: google.maps.DirectionsTravelMode.WALKING
+                }, function (result, status) {
+                    if (status == google.maps.DirectionsStatus.OK) {
+                        new google.maps.Polyline({
+                            map: map,
+                            strokeColor: '#0B3B17',
+                            path: result.routes[0].overview_path
+                        });
+                    }
+                });
+            };
+        }(routeSection[0],routeSection[routeSection.length - 1],waypointsArray), timeOut);
+        timeOut += 500;
         if (beginningOfSection + 2 >= coordinates.length)
             keepBuildingRoute = false;
         else
             beginningOfSection += 2;
     }
-}
-
-function drawSection(timeout,beginning,end,waypoints) {
-    setTimeout( function() {
-        service.route({
-            origin: beginning,
-            destination: end,
-            waypoints: waypoints,
-            travelMode: google.maps.DirectionsTravelMode.WALKING
-        }, function (result, status) {
-            if (status == google.maps.DirectionsStatus.OK) {
-                new google.maps.Polyline({
-                    map: this.map,
-                    strokeColor: '#0B3B17',
-                    path: result.routes[0].overview_path
-                });
-            }
-        }.bind(this))}, timeout);
 }
