@@ -1,22 +1,76 @@
-#map {
-    width: 1600px;
-    height: 500px;
+body {
+    background-color: #E0F8E6;
+}
+
+#button-container {
+    background-color: #C7D6CB;
+    float: left;
+    height: 100%;
+    margin-right: 5px;
+    padding: 5px 5px;
+    width: 15%;
+}
+
+#content {
+    -webkit-box-shadow: 0px 7px 30px 5px rgba(50, 50, 50, 0.71);
+    -moz-box-shadow:    0px 7px 30px 5px rgba(50, 50, 50, 0.71);
+    background-color: white;
+    box-shadow:         0px 7px 30px 5px rgba(50, 50, 50, 0.71);
+    margin: 5px 100px;
+    padding: 5px 5px;
+}
+
+#csv-input {
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+}
+
+#destination {
+    width: 32%;
+}
+
+#display-distance-information {    
+    background-color: #F0FDF4;
+    float: left;
+    height: 100%;
+    width: 84.115%;
+}
+
+#distance {
+    width: 32%;
+}
+
+div h1 {
+    font-family: helvetica;
 }
 
 .div-inline {
     display: inline-block;
 }
 
-#content {
-    -webkit-box-shadow: 0px 7px 30px 5px rgba(50, 50, 50, 0.71);
-    -moz-box-shadow:    0px 7px 30px 5px rgba(50, 50, 50, 0.71);
-    box-shadow:         0px 7px 30px 5px rgba(50, 50, 50, 0.71);
-    background-color: white;
-    margin: 5px 100px;
-    /*overflow: hidden;*/
-    padding: 5px 20px;
+#input-file {
+    background: url(http://icons.iconarchive.com/icons/visualpharm/icons8-metro-style/512/Very-Basic-Upload-icon.png);
+    background-position: center;
+    background-color: #C7D6CB;
+    background-repeat: no-repeat;
+    background-size: contain;
+    border: 1px solid;
+    height: 100%;
+    width: 100%;
 }
 
-body {
-    background-color: #E0F8E6;
+#map {
+    height: 500px;
+    width: 100%;
+}
+
+#options {
+    height: 120px;
+    margin-top: 5px;
+    width: 100%;
+}
+
+#origin {
+    width: 32%;
 }

@@ -13,24 +13,28 @@
         <div id="content">            
             <div id="map">
             </div>
-
-            <div id="input-file">
-                <input type="file" onchange="handleFiles(this.files)"></input>
-            </div>
-        
-            <div id="display-distances">                
-                <div class="div-inline">
-                    <p>Origin: </p>
-                    <p>Destination: </p>
-                    <p>Distance: </p>
+            
+            <div id="options">
+                <div id="button-container">
+                    <div id="input-file" class="div-inline">
+                        <input id="csv-input" type="file" onchange="handleFiles(this.files)" accept=".csv">
+                    </div>
                 </div>
-                
-                <div class="div-inline">
-                    <p id="origin"></p>
-                    <p id="detination"></p>
-                    <p id="distance"></p>
-                </div>                
-            </div>        
+
+                <div id="display-distance-information" class="div-inline">                
+                    <div id="origin" class="div-inline">
+                        <center><h1>Origin</h1></center>
+                    </div>
+                    
+                    <div id="destination" class="div-inline">
+                        <center><h1>Destination</h1></center>
+                    </div>
+                    
+                    <div id="distance" class="div-inline">
+                        <center><h1>Distance</h1></center>
+                    </div>               
+                </div>
+            </div>
         </div>
     </body>
 </html>
