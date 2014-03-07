@@ -10,23 +10,26 @@
         </script>
     </head>
     <body>
-        <div id="input-file">
-            <input type="file" onchange="handleFiles(this.files)"></input>
-        </div>
-    
-        <div id="map">
-        </div>
-    
-        <div id="display-distances">
-            <div class="div-inline">
-                <p>Origin: </p>
-                <p>Destination: </p>
-                <p>Distance: </p>
+        <div id="content">
+            
+            <div id="map">
             </div>
-            <div class="div-inline">
-                <p id="origin"></p>
-                <p id="detination"></p>
-                <p id="distance"></p>
+
+            <div id="input-file">
+                <input type="file" onchange="handleFiles(this.files)"></input>
+            </div>
+        
+            <div id="display-distances">
+                <div class="div-inline">
+                    <p>Origin: </p>
+                    <p>Destination: </p>
+                    <p>Distance: </p>
+                </div>
+                <div class="div-inline">
+                    <p id="origin"></p>
+                    <p id="detination"></p>
+                    <p id="distance"></p>
+                </div>
             </div>
         </div>
     </body>

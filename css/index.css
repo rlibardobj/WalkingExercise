@@ -1,8 +1,26 @@
 #map {
-    width: 100em;
-    height: 50em;
+    width: 1600px;
+    height: 500px;
 }
 
 .div-inline {
     display: inline-block;
+}
+
+#input-file {
+    margin: auto;
+}
+
+#content {
+    margin: 5px 100px;
+    -webkit-box-shadow: 0px 7px 30px 5px rgba(50, 50, 50, 0.71);
+    -moz-box-shadow:    0px 7px 30px 5px rgba(50, 50, 50, 0.71);
+    box-shadow:         0px 7px 30px 5px rgba(50, 50, 50, 0.71);
+    background-color: white;
+    padding: 5px 20px;
+    overflow: hidden;
+}
+
+body {
+    background-color: #E0F8E6;
 }
