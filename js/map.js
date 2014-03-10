@@ -1,8 +1,13 @@
 var map = null;
-var latlngBounds = new google.maps.LatLngBounds();
-var coordinates = new Array();
-var service = new google.maps.DirectionsService();
-var circle = null;
+var latlngBounds = null;
+var service = null;
+var bouncingMarker = null;
+
+var mapOverlays = {
+    circle: null,
+    markers: [],
+    routeLines: []
+}
 
 function initialize() {
     var map_canvas = document.getElementById('map');
@@ -13,14 +18,22 @@ function initialize() {
         mapTypeId: google.maps.MapTypeId.ROADMAP
     }
     map = new google.maps.Map(map_canvas, map_options);
-    circle = new google.maps.Circle({map: map,
-                                     fillColor: '#01DF74',
-                                     radius: 100,
-                                     strokeColor: '#01DF74',
-                                     visible: false});
+    service = new google.maps.DirectionsService();
+    latlngBounds = new google.maps.LatLngBounds();
+    bouncingMarker = new google.maps.Marker();
+    mapOverlays.circle = new google.maps.Circle({
+        map: map,
+        fillColor: '#01DF74',
+        radius: 100,
+        strokeColor: '#01DF74',
+        visible: false
+    });
 }
 
 function displayCoordinatesAndDrawRoutes(csv) {
+    cleanInformation();
+    clearMap();
+    clearLatLngBounds();
     var allCoordinates = csv.split(/\r\n|\n/);
     for (var i=0; i<allCoordinates.length-1 ; i++) {
         var Latlng = allCoordinates[i].split(',');
@@ -37,23 +50,42 @@ function createAndDisplayMarker(lat, long, index) {
         map: map,
         title: 'This is marker #' + (index + 1)
     });
-    google.maps.event.addListener(marker, 'click', function(position) {
-        return function() {
-            if (circle.getVisible()) {
-                if (position.equals(circle.getCenter()))
-                    circle.setVisible(false);
-                else {
-                    console.log(10);
-                }
+    google.maps.event.addListener(marker, 'click', function() {
+        if (mapOverlays.circle.getVisible()) {
+            if (marker.getPosition().equals(mapOverlays.circle.getCenter())) {
+                bouncingMarker.setAnimation(null);
+                mapOverlays.circle.setVisible(false);
             }
             else {
-                circle.setCenter(position);
-                circle.setVisible(true);
+                if (!(marker.getPosition().equals(bouncingMarker.getPosition()))) {
+                    var origin = document.getElementById("origin-text");
+                    var destination = document.getElementById("destination-text");
+                    var distance = document.getElementById("distance-text");
+                    new google.maps.DistanceMatrixService().getDistanceMatrix({
+                        origins: [mapOverlays.circle.getCenter()],
+                        destinations: [marker.getPosition()],
+                        travelMode: google.maps.TravelMode.WALKING
+                    }, function (response, status) {
+                        origin.textContent = response.originAddresses[0];
+                        destination.textContent = response.destinationAddresses[0];
+                        distance.textContent = response.rows[0].elements[0].distance.text;
+                        console.log(response.originAddresses[0]);
+                        console.log(response.destinationAddresses[0]);
+                        console.log(response.rows[0].elements[0].distance.text);
+                    });
+                    bouncingMarker.setAnimation(null);
+                    marker.setAnimation(google.maps.Animation.BOUNCE);
+                    bouncingMarker = marker;
+                }
             }
+        }
+        else {
+            mapOverlays.circle.setCenter(marker.getPosition());
+            mapOverlays.circle.setVisible(true);
         };
-    }(marker.getPosition()));
-    coordinates.push(latlng);
-    latlngBounds.extend(marker.position);
+    });
+    mapOverlays.markers.push(marker);
+    latlngBounds.extend(marker.getPosition());
 }
 
 function centerMap() {
@@ -62,9 +94,8 @@ function centerMap() {
 }
 
 function drawRoute() {
-
-    //Notifies when to finish building the route
-    var keepBuildingRoute = true;
+    //Determines the size of every section of the route to be drawn
+    var sectionSize = 10;
 
     //Starting point of a specific array with the coordinates for a partial section of the route
     var beginningOfSection = 0;
@@ -73,18 +104,16 @@ function drawRoute() {
     var timeOut = 0;
 
     //While not reaching the end of the coordinates array
-    while (keepBuildingRoute) {
-        var routeSection = coordinates.slice(beginningOfSection,beginningOfSection + 3);
+    while (!(beginningOfSection >= mapOverlays.markers.length)) {
+        var endOfSection = (beginningOfSection + sectionSize) - ((((beginningOfSection + sectionSize)  % (mapOverlays.markers.length - 1))) % sectionSize);
         var waypointsArray = [];
-        var waypoints = routeSection.slice(1,2);
-        for (var i = 0; i < waypoints.length; i++) {
+        for (var i = beginningOfSection + 1; i < endOfSection - 1; i++) {
             waypointsArray.push({
-                location: waypoints[i],
+                location: mapOverlays.markers[i].getPosition(),
                 stopover: true
             });
         }
-        //drawSection(timeOut,routeSection[0],routeSection[routeSection.length - 1],waypointsArray);
-        setTimeout( function(beginning,end,waypoints) {
+        setTimeout(function(beginning,end,waypoints) {
             return function () {
                 service.route({
                     origin: beginning,
@@ -93,19 +122,42 @@ function drawRoute() {
                     travelMode: google.maps.DirectionsTravelMode.WALKING
                 }, function (result, status) {
                     if (status == google.maps.DirectionsStatus.OK) {
-                        new google.maps.Polyline({
+                        mapOverlays.routeLines.push(new google.maps.Polyline({
                             map: map,
                             strokeColor: '#01DF74',
                             path: result.routes[0].overview_path
-                        });
+                        }));
                     }
                 });
             };
-        }(routeSection[0],routeSection[routeSection.length - 1],waypointsArray), timeOut);
+        }(mapOverlays.markers[beginningOfSection].getPosition(),mapOverlays.markers[endOfSection].getPosition(),waypointsArray), timeOut);
         timeOut += 500;
-        if (beginningOfSection + 2 >= coordinates.length)
-            keepBuildingRoute = false;
-        else
-            beginningOfSection += 2;
+        beginningOfSection += sectionSize;
     }
+}
+
+function clearMap() {
+    for (var i = 0; i < mapOverlays.markers.length; i++)
+        mapOverlays.markers[i].setMap(null);
+    for (var i = 0; i < mapOverlays.routeLines.length; i++)
+        mapOverlays.routeLines[i].setMap(null);
+    mapOverlays.markers = [];
+    mapOverlays.routeLines = [];
+}
+
+function clearLatLngBounds() {
+    latlngBounds = new google.maps.LatLngBounds();
+}
+
+function cleanInformation() {
+    if (!(document.getElementById("origin-text").textContent === "")) {
+        var origin = document.getElementById("origin-text");
+        var destination = document.getElementById("destination-text");
+        var distance = document.getElementById("distance-text");
+        origin.textContent = "";
+        destination.textContent = "";
+        distance.textContent = "";
+    }
+    if (mapOverlays.circle.getVisible())
+        mapOverlays.circle.setVisible(false);
 }
