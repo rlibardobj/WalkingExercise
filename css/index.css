@@ -3,7 +3,10 @@ body {
 }
 
 #button-container {
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
     background-color: #C7D6CB;
+    box-sizing: border-box;
     float: left;
     height: 100%;
     margin-right: 5px;
@@ -21,20 +24,24 @@ body {
 }
 
 #csv-input {
+    float: left;
     height: 100%;
-    width: 100%;
     opacity: 0;
+    width: 100%;
 }
 
 #destination {
     width: 32%;
 }
 
-#display-distance-information {    
+#display-distance-information { 
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
     background-color: #F0FDF4;
+    box-sizing: border-box;
     float: left;
     height: 100%;
-    width: 84.115%;
+    width: calc(85% - 5px);
 }
 
 #distance {
@@ -55,7 +62,7 @@ div h1 {
     background-color: #C7D6CB;
     background-repeat: no-repeat;
     background-size: contain;
-    border: 1px solid;
+    float: left;
     height: 100%;
     width: 100%;
 }

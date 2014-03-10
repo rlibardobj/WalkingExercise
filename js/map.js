@@ -13,9 +13,11 @@ function initialize() {
         mapTypeId: google.maps.MapTypeId.ROADMAP
     }
     map = new google.maps.Map(map_canvas, map_options);
-    circle = new google.maps.Circle({map: map, 
-                                     visible: false, 
-                                     radius: 100});
+    circle = new google.maps.Circle({map: map,
+                                     fillColor: '#01DF74',
+                                     radius: 100,
+                                     strokeColor: '#01DF74',
+                                     visible: false});
 }
 
 function displayCoordinatesAndDrawRoutes(csv) {
@@ -93,7 +95,7 @@ function drawRoute() {
                     if (status == google.maps.DirectionsStatus.OK) {
                         new google.maps.Polyline({
                             map: map,
-                            strokeColor: '#0B3B17',
+                            strokeColor: '#01DF74',
                             path: result.routes[0].overview_path
                         });
                     }
