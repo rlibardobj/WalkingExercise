@@ -81,3 +81,8 @@ div h1 {
 #origin {
     width: 32%;
 }
+
+p {
+    font-family: helvetica;
+    font-size: 15px;
+}
