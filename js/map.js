@@ -1,13 +1,20 @@
 var map = null;
-var latlngBounds = null;
-var service = null;
-var bouncingMarker = null;
+var latlngBounds = null; // Bounds which are used for centering the display of any result for a request.
+var service = null; // Service used for getting routes information.
+var bouncingMarker = null; // Used for having a reference for the destination marker when displaying distance information.
 
+// Holds the overlays displayed in the map (circle, markers and routes)
 var mapOverlays = {
     circle: null,
     markers: [],
     routeLines: []
 }
+
+/*
+ * Initializes the map in a default position, the bounds for displayed results, 
+ * the service for getting routes information, the marker used for knowing the destination 
+ * maker when displaying distance information and the map's circle.
+ */
 
 function initialize() {
     var map_canvas = document.getElementById('map');
@@ -30,6 +37,12 @@ function initialize() {
     });
 }
 
+/*
+ * Gets the file's contents, resets the whole map state and variables
+ * that could've been previously used, and finally delegates the creation 
+ * and display of both, markers and routes.
+ */
+
 function displayCoordinatesAndDrawRoutes(csv) {
     cleanInformation();
     clearMap();
@@ -43,6 +56,14 @@ function displayCoordinatesAndDrawRoutes(csv) {
     centerMap();
 }
 
+/*
+ * Creates a maker in the map according to the given latitude 
+ * and longitude and sets its title to be the index specified.
+ * Adds the function to be executed when the marker is clicked and pushes 
+ * the marker into the variable that holds the map overlays.
+ * At the end, it extends the bounds to cover the marker's position.
+ */
+
 function createAndDisplayMarker(lat, long, index) {
     var latlng = new google.maps.LatLng(lat,long);
     var marker = new google.maps.Marker({
@@ -54,6 +75,7 @@ function createAndDisplayMarker(lat, long, index) {
         if (mapOverlays.circle.getVisible()) {
             if (marker.getPosition().equals(mapOverlays.circle.getCenter())) {
                 bouncingMarker.setAnimation(null);
+                bouncingMarker = new google.maps.Marker();
                 cleanInformation();
             }
             else {
@@ -69,9 +91,6 @@ function createAndDisplayMarker(lat, long, index) {
                         origin.textContent = response.originAddresses[0];
                         destination.textContent = response.destinationAddresses[0];
                         distance.textContent = response.rows[0].elements[0].distance.text;
-                        console.log(response.originAddresses[0]);
-                        console.log(response.destinationAddresses[0]);
-                        console.log(response.rows[0].elements[0].distance.text);
                     });
                     bouncingMarker.setAnimation(null);
                     marker.setAnimation(google.maps.Animation.BOUNCE);
@@ -88,10 +107,13 @@ function createAndDisplayMarker(lat, long, index) {
     latlngBounds.extend(marker.getPosition());
 }
 
-function centerMap() {
-    map.setCenter(latlngBounds.getCenter());
-    map.fitBounds(latlngBounds);
-}
+/*
+ * When markers are displayed and pushed into the overlays, the route is drawn 
+ * taking those markers as a reference. This function draws the route by sections, 
+ * which are drawn at a specified time interval to avoid any problems with the API's 
+ * restrictions. The size for the section must not be higher than 10 because of an API's
+ * restriction.
+ */
 
 function drawRoute() {
     //Determines the size of every section of the route to be drawn
@@ -103,7 +125,7 @@ function drawRoute() {
     //Used for managing the time between calls to the DirectionsService
     var timeOut = 0;
 
-    //While not reaching the end of the coordinates array
+    //While not reaching the end of the markers array, draw another section of the route
     while (!(beginningOfSection >= mapOverlays.markers.length)) {
         var endOfSection = (beginningOfSection + sectionSize) - ((((beginningOfSection + sectionSize)  % (mapOverlays.markers.length - 1))) % sectionSize);
         var waypointsArray = [];
@@ -136,28 +158,12 @@ function drawRoute() {
     }
 }
 
-function clearMap() {
-    for (var i = 0; i < mapOverlays.markers.length; i++)
-        mapOverlays.markers[i].setMap(null);
-    for (var i = 0; i < mapOverlays.routeLines.length; i++)
-        mapOverlays.routeLines[i].setMap(null);
-    mapOverlays.markers = [];
-    mapOverlays.routeLines = [];
-}
+/*
+ * Centers the map according to the current state of the bounds
+ * variable.
+ */
 
-function clearLatLngBounds() {
-    latlngBounds = new google.maps.LatLngBounds();
-}
-
-function cleanInformation() {
-    if (!(document.getElementById("origin-text").textContent === "")) {
-        var origin = document.getElementById("origin-text");
-        var destination = document.getElementById("destination-text");
-        var distance = document.getElementById("distance-text");
-        origin.textContent = "";
-        destination.textContent = "";
-        distance.textContent = "";
-    }
-    if (mapOverlays.circle.getVisible())
-        mapOverlays.circle.setVisible(false);
+function centerMap() {
+    map.setCenter(latlngBounds.getCenter());
+    map.fitBounds(latlngBounds);
 }
