@@ -54,7 +54,7 @@ function createAndDisplayMarker(lat, long, index) {
         if (mapOverlays.circle.getVisible()) {
             if (marker.getPosition().equals(mapOverlays.circle.getCenter())) {
                 bouncingMarker.setAnimation(null);
-                mapOverlays.circle.setVisible(false);
+                cleanInformation();
             }
             else {
                 if (!(marker.getPosition().equals(bouncingMarker.getPosition()))) {
