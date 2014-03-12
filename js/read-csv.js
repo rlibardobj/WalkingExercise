@@ -38,7 +38,8 @@ function getFileAsText(fileToRead) {
 
 function loadHandler(event) {
     var csv = event.target.result;
-    displayCoordinatesAndDrawRoutes(csv);             
+    displayCoordinates(csv);
+    mapObject.drawRoute(10);
 }
 
 /*
