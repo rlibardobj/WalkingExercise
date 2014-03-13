@@ -4,11 +4,12 @@
         <link rel="stylesheet" type="text/css" href="css/index.css">
         <meta name="viewport" content="width=device-width">
         <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-        <script src="js/helper.js"></script>
-        <script src="js/map.js"></script>
-        <script src="js/read-csv.js"></script>
+        <script src="js/distanceDisplayModule.js"></script>
+        <script src="js/mapModule.js"></script>
+        <script src="js/readingModule.js"></script>
+        <script src="js/controlModule.js"></script>
         <script>
-            google.maps.event.addDomListener(window, 'load', mapObject.initialize);
+            google.maps.event.addDomListener(window, 'load', controlModule.initialize);
         </script>
     </head>
     <body>
@@ -19,7 +20,7 @@
             <div id="options">
                 <div id="button-container">
                     <div id="input-file" class="inline">
-                        <input id="csv-input" type="file" onchange="handleFiles(this)" accept=".csv">
+                        <input id="csv-input" type="file" onchange="controlModule.handleFiles(this)" accept=".csv">
                     </div>
                 </div>
 
