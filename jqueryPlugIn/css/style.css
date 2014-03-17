@@ -1,0 +1,15 @@
+#correct-container {
+    border: 3px green solid;
+    height: 400px;
+    margin: 5px 0px;
+    width: 800px;
+}
+
+#incorrect-container {
+    border: 3px red solid;
+}
+
+p {
+    font-family: 'helvetica';
+    font-size: 1em;
+}
