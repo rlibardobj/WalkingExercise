@@ -4,23 +4,16 @@
         <link rel="stylesheet" type="text/css" href="css/index.css">
         <meta name="viewport" content="width=device-width">
         <script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-        <script src="js/distanceDisplayModule.js"></script>
-        <script src="js/mapModule.js"></script>
-        <script src="js/readingModule.js"></script>
-        <script src="js/controlModule.js"></script>
-        <script>
-            google.maps.event.addDomListener(window, 'load', controlModule.initialize);
-        </script>
     </head>
     <body>
         <div id="content">            
             <div id="map">
             </div>
-            
+
             <div id="options">
                 <div id="button-container">
                     <div id="input-file" class="inline">
-                        <input id="csv-input" type="file" onchange="controlModule.handleFiles(this)" accept=".csv">
+                        <input id="csv-input" type="file" accept=".csv">
                     </div>
                 </div>
 
@@ -29,12 +22,12 @@
                         <h1 class="inline">Origin</h1>
                         <p id="origin-text" class="inline"></p>
                     </div>
-                    
+
                     <div id="destination" class="inline">
                         <h1 class="inline">Destination</h1>
                         <p id="destination-text" class="inline"></p>
                     </div>
-                    
+
                     <div id="distance" class="inline">
                         <h1 class="inline">Distance</h1>
                         <p id="distance-text" class="inline"></p>
@@ -42,5 +35,13 @@
                 </div>
             </div>
         </div>
+
+        <script src="js/distanceDisplayModule.js"></script>
+        <script src="js/mapModule.js"></script>
+        <script src="js/readingModule.js"></script>
+        <script src="js/controlModule.js"></script>
+        <script>
+            google.maps.event.addDomListener(window, 'load', app.controlModule.initialize);
+        </script>
     </body>
 </html>

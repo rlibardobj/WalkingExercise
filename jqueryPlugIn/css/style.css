@@ -1,8 +1,10 @@
 #correct-container {
     border: 3px green solid;
-    height: 400px;
+    height: 150px;
     margin: 5px 0px;
     width: 800px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #incorrect-container {
@@ -12,4 +14,16 @@
 p {
     font-family: 'helvetica';
     font-size: 1em;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#text-input {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#options-buttons {
+    margin-left: auto;
+    margin-right: auto;
 }

@@ -3,6 +3,7 @@
         var container = $('#' + containerID);
         if (container.is("div")) {
             var canvasWithString = $('<canvas style="height: 400px; width: 800px;">');
+            canvasWithString.attr({width:800,height:400});
             canvasContext = canvasWithString[0].getContext('2d');
             canvasContext.font = "50pt Helvetica";
             canvasContext.fillStyle = "#071907";

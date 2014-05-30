@@ -1,4 +1,8 @@
-var readingModule = (function() {
+var app = window.app = window.app || {};
+
+app.readingModule = (function() {
+    'use strict';
+    
     return {
         
         /*
